@@ -6,7 +6,7 @@ from pathlib import PurePath
 
 class Recipe(recipe.Recipe):
     name = 'meson'
-    version = '1.3.1'
+    version = '1.5.2'
     licenses = [License.Apachev2]
     btype = BuildType.CUSTOM
 
@@ -18,14 +18,11 @@ class Recipe(recipe.Recipe):
     else:
         stype = SourceType.TARBALL
         url = 'https://github.com/mesonbuild/meson/releases/download/%(version)s/meson-%(version)s.tar.gz'
-        tarball_checksum = '6020568bdede1643d4fb41e28215be38eff5d52da28ac7d125457c59e0032ad7'
+        tarball_checksum = 'f955e09ab0d71ef180ae85df65991d58ed8430323de7d77a37e11c9ea630910b'
+        patches = []
 
     files_bin = ['bin/meson']
     files_python = []
-
-    patches = [
-        f'{name}/0001-nasm-Add-mms-bitfields-to-the-list-of-ignored-flags.patch'
-    ]
 
     async def install(self):
         # setup.py barfs if using posix paths on Windows
