@@ -23,7 +23,7 @@ class Recipe(recipe.Recipe):
         'hwaccels': 'disabled',
         'dxva2': 'disabled',
         'vdpau': 'disabled',
-        'filters': 'disabled',
+        'filters': 'enabled',
         'yadif_filter': 'enabled',
         # Uncomment the following option once implemented in the port
         # 'doc': 'disabled',
