@@ -15,9 +15,9 @@ class Recipe(recipe.Recipe):
     btype = BuildType.MESON
     meson_options = {
         'avdevice': 'disabled',
-        'programs': 'disabled',
+        'programs': 'enabled',
         'flac_encoder': 'disabled',
-        'protocols': 'disabled',
+        'protocols': 'enabled',
         'devices': 'disabled',
         'network': 'disabled',
         'hwaccels': 'disabled',
