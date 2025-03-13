@@ -16,15 +16,15 @@ class Recipe(recipe.Recipe):
     btype = BuildType.MESON
     meson_options = {
         'avdevice': 'disabled',
-        'programs': 'disabled',
+        'programs': 'enabled',
         'flac_encoder': 'disabled',
-        'protocols': 'disabled',
+        'protocols': 'enabled',
         'devices': 'disabled',
         'network': 'disabled',
         'hwaccels': 'disabled',
         'dxva2': 'disabled',
         'vdpau': 'disabled',
-        'filters': 'disabled',
+        'filters': 'enabled',
         'yadif_filter': 'enabled',
         # Uncomment the following option once implemented in the port
         # 'doc': 'disabled',
