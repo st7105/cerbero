@@ -26,6 +26,12 @@ variables:
   # CI_GSTREAMER_* variables are set by gstreamer's CI when it triggers cerbero CI.
   CI_GSTREAMER_TRIGGERED: 'false'
   GST_UPSTREAM_BRANCH: '1.26'
+  # Our gitlab instance and runner are using a proxy and have
+  # trouble with the normal fetch. git itself handles the proxy
+  # more reliably.
+  #
+  # https://doc.rust-lang.org/cargo/reference/config.html#netgit-fetch-with-cli
+  CARGO_NET_GIT_FETCH_WITH_CLI: true
   DEFAULT_CERBERO_ARGS: >
     --variants werror
     --clocktime
@@ -81,10 +87,9 @@ default:
 
 .android fedora image:
   variables:
-    # FIXME: add $GST_UPSTREAM_BRANCH suffix when bumping android image tag
-    FDO_DISTRIBUTION_TAG: "$ANDROID_FEDORA_TAG"
+    FDO_DISTRIBUTION_TAG: "$ANDROID_FEDORA_TAG-$GST_UPSTREAM_BRANCH"
     FDO_DISTRIBUTION_VERSION: '40'
-    FDO_DISTRIBUTION_PACKAGES: "file git-core java-11-openjdk-devel lbzip2 python3-distro python3-distro-info make pkg-config unzip which xz python3-setuptools"
+    FDO_DISTRIBUTION_PACKAGES: "file git-core java-11-openjdk-devel lbzip2 python3-distro python3-distro-info make pkg-config unzip which xz python3-setuptools pax-utils binutils"
     FDO_DISTRIBUTION_EXEC: ci/docker_android_setup.sh $ANDROID_HOME $ANDROID_NDK_HOME $GST_UPSTREAM_BRANCH
     FDO_UPSTREAM_REPO: gstreamer/cerbero
     FDO_REPO_SUFFIX: android
@@ -538,8 +543,10 @@ cerbero cross-android universal examples:
       - "*/sources/**/b/meson-logs/meson-log.txt"
       - "*/sources/**/b/CMakeFiles/CMakeError.log"
       - "*/sources/**/b/CMakeFiles/CMakeLog.log"
-      - "gstreamer-1.0-1.*.pkg"
-      - "gstreamer-1.0-devel-1.*.pkg"
+      # Skip uploading these (rather large) build artefacts until fdo
+      # infrastructure gets fixed or we find another workaround
+      # - "gstreamer-1.0-1.*.pkg"
+      # - "gstreamer-1.0-devel-1.*.pkg"
     exclude:
       - .git
       - .git/**/*
@@ -654,7 +661,7 @@ cerbero cross-ios universal examples arm64-host:
     CERBERO_RUN_SUFFIX: ".exe"
     CERBERO_BOOTSTRAP_SYSTEM: "no"
     HAVE_CCACHE: ""
-    CERBERO_PACKAGE_ARGS: ""
+    CERBERO_PACKAGE_ARGS: "-t"
   before_script:
     # Test that the powershell script works
     - ./cerbero-uninstalled --help
@@ -668,7 +675,9 @@ cerbero cross-ios universal examples arm64-host:
       - "*/sources/**/b/meson-logs/meson-log.txt"
       - "*/sources/**/b/CMakeFiles/CMakeError.log"
       - "*/sources/**/b/CMakeFiles/CMakeLog.log"
-      - "*.msi"
+      # Skip uploading these (rather large) build artefacts until fdo
+      # infrastructure gets fixed or we find another workaround
+      # - "*.msi"
     exclude:
       - .git
       - .git/**/*

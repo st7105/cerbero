@@ -4,7 +4,7 @@
 class Recipe(custom.GStreamer):
     name = 'gst-plugins-base-1.0'
     btype = BuildType.MESON
-    tarball_checksum = 'e23189fbed2ec486690382d1055c19eeaf5aae3e95e2576fc4c884d96a90e69e'
+    tarball_checksum = '4ef9f9ef09025308ce220e2dd22a89e4c992d8ca71b968e3c70af0634ec27933'
     meson_options = {# enabled plugins
                      'gl': 'enabled',
                      'gl-graphene': 'enabled',
@@ -43,6 +43,7 @@ class Recipe(custom.GStreamer):
              '%(libdir)s/gstreamer-1.0/libgstgio%(mext)s',
              '%(libdir)s/gstreamer-1.0/libgstoverlaycomposition%(mext)s',
              '%(libdir)s/gstreamer-1.0/libgstpango%(mext)s',
+             '%(libdir)s/gstreamer-1.0/libgstpbtypes%(mext)s',
              '%(libdir)s/gstreamer-1.0/libgstrawparse%(mext)s',
              '%(libdir)s/gstreamer-1.0/libgsttypefindfunctions%(mext)s',
              '%(libdir)s/gstreamer-1.0/libgstvideoconvertscale%(mext)s',
@@ -63,6 +64,7 @@ class Recipe(custom.GStreamer):
              '%(libdir)s/gstreamer-1.0/libgstgio.a', '%(libdir)s/gstreamer-1.0/libgstgio.la',
              '%(libdir)s/gstreamer-1.0/libgstoverlaycomposition.a', '%(libdir)s/gstreamer-1.0/libgstoverlaycomposition.la',
              '%(libdir)s/gstreamer-1.0/libgstpango.a', '%(libdir)s/gstreamer-1.0/libgstpango.la',
+             '%(libdir)s/gstreamer-1.0/libgstpbtypes.a', '%(libdir)s/gstreamer-1.0/libgstpbtypes.la',
              '%(libdir)s/gstreamer-1.0/libgstrawparse.a', '%(libdir)s/gstreamer-1.0/libgstrawparse.la',
              '%(libdir)s/gstreamer-1.0/libgsttypefindfunctions.a', '%(libdir)s/gstreamer-1.0/libgsttypefindfunctions.la',
              '%(libdir)s/gstreamer-1.0/libgstvideoconvertscale.a', '%(libdir)s/gstreamer-1.0/libgstvideoconvertscale.la',

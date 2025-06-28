@@ -103,10 +103,10 @@ endif()
 
 # Prepare Android hotfixes for x264
 if(ANDROID_ABI MATCHES "^armeabi")
-    set(NEEDS_NOTEXT_FIX TRUE)
+    set(NEEDS_TEXTREL_ERROR TRUE)
     set(NEEDS_BSYMBOLIC_FIX TRUE)
 elseif(ANDROID_ABI STREQUAL "x86")
-    set(NEEDS_NOTEXT_FIX TRUE)
+    set(NEEDS_TEXTREL_ERROR TRUE)
     set(NEEDS_BSYMBOLIC_FIX TRUE)
 # arm64: https://ffmpeg.org/pipermail/ffmpeg-devel/2022-July/298734.html 
 elseif(ANDROID_ABI STREQUAL "x86_64" OR ANDROID_ABI STREQUAL "arm64-v8a")
@@ -128,7 +128,7 @@ if(ANDROID)
     if(NOT DEFINED GStreamer_NDK_BUILD_PATH AND DEFINED GSTREAMER_NDK_BUILD_PATH)
         set(GStreamer_NDK_BUILD_PATH "${GSTREAMER_NDK_BUILD_PATH}")
     elseif(NOT DEFINED GStreamer_NDK_BUILD_PATH)
-        set(GStreamer_NDK_BUILD_PATH  "${GStreamer_ROOT}/share/gst-android/ndk-build/")
+        set(GStreamer_NDK_BUILD_PATH  "${GStreamer_ROOT_DIR}/share/gst-android/ndk-build/")
     endif()
 endif()
 
@@ -155,7 +155,7 @@ if(ANDROID)
     if(NOT DEFINED GStreamer_NDK_BUILD_PATH AND DEFINED GSTREAMER_NDK_BUILD_PATH)
         set(GStreamer_NDK_BUILD_PATH "${GSTREAMER_NDK_BUILD_PATH}")
     elseif(NOT DEFINED GStreamer_NDK_BUILD_PATH)
-        set(GStreamer_NDK_BUILD_PATH  "${GStreamer_ROOT}/share/gst-android/ndk-build/")
+        set(GStreamer_NDK_BUILD_PATH  "${GStreamer_ROOT_DIR}/share/gst-android/ndk-build/")
     endif()
 elseif(IOS)
     if(NOT DEFINED GStreamer_ASSETS_DIR AND DEFINED GStreamer_ASSETS_DIR)
@@ -166,6 +166,10 @@ elseif(IOS)
         # Same as above
         set(GStreamer_ASSETS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../${GStreamer_ASSETS_DIR}")
     endif()
+endif()
+
+if (ANDROID AND CMAKE_HOST_WIN32)
+    set(PKG_CONFIG_EXECUTABLE "${GStreamer_NDK_BUILD_PATH}/tools/windows/pkg-config.exe")
 endif()
 
 if (ANDROID)
@@ -350,6 +354,11 @@ if (GSTREAMER_IS_MOBILE)
     # libraries listing.
     # If pkgconf is available, replace all PC_GStreamer_ entries with
     # PC_GStreamer_NoDeps and uncomment the code block above.
+    if (ANDROID AND CMAKE_HOST_WIN32)
+        # Prevent visibility inconsistencies between glib and others wrt.
+        # libintl
+        list(REMOVE_DUPLICATES PC_GStreamer_LIBRARIES)
+    endif()
     foreach(LOCAL_LIB IN LISTS PC_GStreamer_LIBRARIES)
         # list(TRANSFORM REPLACE) is of no use here
         # https://gitlab.kitware.com/cmake/cmake/-/issues/16899
@@ -395,17 +404,12 @@ if (GSTREAMER_IS_MOBILE)
             $<TARGET_PROPERTY:GStreamer::GStreamer,INTERFACE_INCLUDE_DIRECTORIES>
     )
 
-    # Text relocations are required for all 32-bit objects. We
-    # must disable the warning to allow linking with lld. Unlike gold, ld which
-    # will silently allow text relocations, lld support must be explicit.
-    #
-    # See https://crbug.com/911658#c19 for more information. See also
-    # https://trac.ffmpeg.org/ticket/7878
-    if(DEFINED NEEDS_NOTEXT_FIX)
+    # text relocations are strictly forbidden, error out if we encounter any
+    if(DEFINED NEEDS_TEXTREL_ERROR)
         target_link_options(
             GStreamerMobile
             PRIVATE
-                "-Wl,-z,notext"
+                "-Wl,-z,text"
         )
     endif()
 
